@@ -1,15 +1,15 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from model import Customer
-import settings
-from pydantic import BaseModel
 from hashing import Hash
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import HTTPException, Depends, status
 from auth_handler import signJWT
+from decouple import config
 
 
-uri = settings.mongodb_uri
-client = AsyncIOMotorClient(uri)
+MONGODB_URI = config('MONGODB_URI')
+client = AsyncIOMotorClient(MONGODB_URI)
+
 try:
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
