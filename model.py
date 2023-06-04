@@ -1,10 +1,8 @@
 from pydantic import BaseModel
 from typing import Optional
-from uuid import uuid4
 
 
 class Books(BaseModel):
-    id: uuid4
     title: str
     author: str
     description: str
@@ -16,11 +14,10 @@ class Books(BaseModel):
 
 
 class Customer(BaseModel):
-    id: uuid4
     email: str
     password: str
-    orders: set
-    cart: set
+    orders: list[str]
+    cart: list[str]
 
 
 class Login(BaseModel):
