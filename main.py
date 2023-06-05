@@ -1,4 +1,5 @@
 
+import os
 from typing import Annotated
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,7 +7,8 @@ from auth_bearer import JWTBearer
 from model import Customer, Login
 from database import (
     create_customer,
-    login
+    login,
+    fetch_books
 )
 
 
@@ -23,26 +25,34 @@ app.add_middleware(
 
 
 @app.get("/")
-def read_root():
+def root():
     return {"data": "Hello World"}
 
 
+@app.get('/favicon.ico', deprecated=True)
+async def favicon():
+    return 1
+
+
 @app.post('/api/register')
-async def add_customer(request: Customer):
+async def register(request: Customer):
     response = await create_customer(request)
     if response:
         return response
-    raise HTTPException(400, "Something went wrong")
+    raise HTTPException(404, "Something went wrong")
 
 
 @app.post('/api/login')
-async def sign_in(request: Login):
+async def signin(request: Login):
     response = await login(request)
     if response:
         return response
-    raise HTTPException(400, "Something went wrong")
+    raise HTTPException(404, "Something went wrong")
 
 
-@app.get('/api/listBooks', dependencies=[Depends(JWTBearer())])
-async def listBooks():
-    return {"Hi": "Hello"}
+@app.get('/api/getbooks', dependencies=[Depends(JWTBearer())])
+async def get_books():
+    response = await fetch_books()
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")

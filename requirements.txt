@@ -4,4 +4,4 @@ motor
 PyJWT
 python-decouple
 passlib
-bycrypt
+bcrypt

@@ -2,13 +2,13 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class Books(BaseModel):
+class Book(BaseModel):
     title: str
     author: str
-    description: str
-    cover_image: str
+    description: Optional[str]
+    cover_image_url: Optional[str]
     price: int
-    genre: str
+    genre: list
     publication_date: int
     customer_ratings: str
 
@@ -16,19 +16,10 @@ class Books(BaseModel):
 class Customer(BaseModel):
     email: str
     password: str
-    orders: list[str]
-    cart: list[str]
+    orders: Optional[list]
+    cart: Optional[list]
 
 
 class Login(BaseModel):
     email: str
     password: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-
-class TokenData(BaseModel):
-    email: Optional[str] = None
