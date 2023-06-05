@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import APIRouter, FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from auth_bearer import JWTBearer
 from model import Customer, Login, Item
@@ -33,8 +33,17 @@ def root():
 async def favicon():
     return 1
 
+public_routes = APIRouter(
+    prefix="/api",
+)
 
-@app.post('/api/register')
+private_routes = APIRouter(
+    prefix="/api",
+    dependencies=[Depends(JWTBearer())]
+)
+
+
+@public_routes.post('/register')
 async def register(request: Customer):
     response = await create_customer(request)
     if response:
@@ -42,7 +51,7 @@ async def register(request: Customer):
     raise HTTPException(404, "Something went wrong")
 
 
-@app.post('/api/login')
+@public_routes.post('/login')
 async def signin(request: Login):
     response = await login(request)
     if response:
@@ -50,7 +59,7 @@ async def signin(request: Login):
     raise HTTPException(404, "Something went wrong")
 
 
-@app.get('/api/getbooks', dependencies=[Depends(JWTBearer())])
+@private_routes.get('/getbooks')
 async def get_books():
     response = await fetch_books()
     if response:
@@ -58,7 +67,7 @@ async def get_books():
     raise HTTPException(404, "Something went wrong")
 
 
-@app.post('/api/cart')
+@private_routes.post('/cart')
 async def post_cart(request: Item):
     response = await cart(request, "add")
     if response:
@@ -66,7 +75,7 @@ async def post_cart(request: Item):
     raise HTTPException(404, "Something went wrong")
 
 
-@app.delete('/api/cart')
+@private_routes.delete('/cart')
 async def delete_cart(request: Item):
     response = await cart(request, "delete")
     if response:
@@ -74,9 +83,13 @@ async def delete_cart(request: Item):
     raise HTTPException(404, "Something went wrong")
 
 
-@app.post('/api/order')
+@private_routes.post('/order')
 async def post_order(request: Item):
     response = await add_order(request)
     if response:
         return response
     raise HTTPException(404, "Something went wrong")
+
+
+app.include_router(public_routes)
+app.include_router(private_routes)
