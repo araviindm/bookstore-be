@@ -44,7 +44,7 @@ async def fetch_books():
     cursor = db.books.find({})
     if not cursor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'Error in fetching books')
+                            detail=f'Error fetching books')
     books = []
     async for document in cursor:
         books.append(Book(**document))
@@ -92,3 +92,20 @@ async def find_customer_by_id(cust_id: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Error in fetching customer')
     return customer
+
+
+async def search_books(query: str):
+    cursor = db.books.find({
+        "$or": [
+            {"title": {"$regex": query, '$options': 'i'}},
+            {"author": {"$regex": query, '$options': 'i'}},
+            {"genre": {"$regex": query, '$options': 'i'}}
+        ]
+    })
+    if not cursor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error fetching books')
+    books = []
+    async for document in cursor:
+        books.append(Book(**document))
+    return books

@@ -10,7 +10,7 @@ class Book(BaseModel):
     description: Optional[str]
     cover_image_url: Optional[str]
     price: int
-    genre: list
+    genre: str
     publication_date: int
     customer_ratings: str
 

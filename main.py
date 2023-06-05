@@ -8,7 +8,8 @@ from database import (
     login,
     fetch_books,
     cart,
-    add_order
+    add_order,
+    search_books
 )
 
 
@@ -86,6 +87,14 @@ async def delete_cart(request: Item):
 @private_routes.post('/order')
 async def post_order(request: Item):
     response = await add_order(request)
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@public_routes.get('/search/{id}')
+async def search(id: str):
+    response = await search_books(id)
     if response:
         return response
     raise HTTPException(404, "Something went wrong")
