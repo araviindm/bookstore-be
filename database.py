@@ -1,5 +1,6 @@
+from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
-from model import Customer, Login, Book
+from model import Customer, Login, Book, Cart
 from hashing import Hash
 from fastapi import HTTPException, Depends, status
 from auth_handler import signJWT
@@ -48,3 +49,18 @@ async def fetch_books():
     async for document in cursor:
         books.append(Book(**document))
     return books
+
+
+async def add_to_cart(request: Cart):
+    user_id = request.cust_id
+    user: Customer = await db.customers.find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error adding to cart')
+    cart = user['cart']
+    cart.append(request.book_id)
+    resp = await db.customers.update_one({"_id": ObjectId(user_id)}, {"$set": {"cart": cart}})
+    if not resp:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error adding to cart')
+    return {"res": "added"}

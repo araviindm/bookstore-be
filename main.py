@@ -1,14 +1,13 @@
 
-import os
-from typing import Annotated
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from auth_bearer import JWTBearer
-from model import Customer, Login
+from model import Customer, Login, Cart
 from database import (
     create_customer,
     login,
-    fetch_books
+    fetch_books,
+    add_to_cart
 )
 
 
@@ -53,6 +52,14 @@ async def signin(request: Login):
 @app.get('/api/getbooks', dependencies=[Depends(JWTBearer())])
 async def get_books():
     response = await fetch_books()
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@app.post('/api/cart')
+async def post_cart(request: Cart):
+    response = await add_to_cart(request)
     if response:
         return response
     raise HTTPException(404, "Something went wrong")

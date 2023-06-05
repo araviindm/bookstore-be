@@ -1,5 +1,7 @@
-from pydantic import BaseModel
+
 from typing import Optional
+
+from pydantic import BaseModel
 
 
 class Book(BaseModel):
@@ -23,3 +25,8 @@ class Customer(BaseModel):
 class Login(BaseModel):
     email: str
     password: str
+
+
+class Cart(BaseModel):
+    cust_id: str
+    book_id: str
