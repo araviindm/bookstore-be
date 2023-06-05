@@ -12,9 +12,6 @@ from database import (
     add_order,
     search_books
 )
-import pydantic
-from bson import ObjectId
-pydantic.json.ENCODERS_BY_TYPE[ObjectId] = str
 
 
 app = FastAPI()

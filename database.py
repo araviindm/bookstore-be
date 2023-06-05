@@ -56,6 +56,7 @@ async def find_book_by_id(book_id: str):
     if not book:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Error in fetching book')
+    book.pop('_id', None)
     return book
 
 
