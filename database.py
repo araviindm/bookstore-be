@@ -51,16 +51,27 @@ async def fetch_books():
     return books
 
 
-async def add_to_cart(request: Cart):
+async def cart(request: Cart, type: str):
     user_id = request.cust_id
+    book_id = request.book_id
     user: Customer = await db.customers.find_one({"_id": ObjectId(user_id)})
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Error adding to cart')
     cart = user['cart']
-    cart.append(request.book_id)
-    resp = await db.customers.update_one({"_id": ObjectId(user_id)}, {"$set": {"cart": cart}})
-    if not resp:
+    resp = {}
+    if type == "add":
+        cart.append(book_id)
+        resp = {"res": "added"}
+    else:
+        if not cart:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f'Cart is empty')
+        cart.remove(book_id)
+        resp = {"res": "deleted"}
+
+    db_resp = await db.customers.update_one({"_id": ObjectId(user_id)}, {"$set": {"cart": cart}})
+    if not db_resp:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Error adding to cart')
-    return {"res": "added"}
+    return resp

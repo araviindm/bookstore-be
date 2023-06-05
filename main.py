@@ -7,7 +7,7 @@ from database import (
     create_customer,
     login,
     fetch_books,
-    add_to_cart
+    cart
 )
 
 
@@ -59,7 +59,15 @@ async def get_books():
 
 @app.post('/api/cart')
 async def post_cart(request: Cart):
-    response = await add_to_cart(request)
+    response = await cart(request, "add")
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@app.delete('/api/cart')
+async def del_cart(request: Cart):
+    response = await cart(request, "delete")
     if response:
         return response
     raise HTTPException(404, "Something went wrong")
