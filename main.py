@@ -2,12 +2,13 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from auth_bearer import JWTBearer
-from model import Customer, Login, Cart
+from model import Customer, Login, Item
 from database import (
     create_customer,
     login,
     fetch_books,
-    cart
+    cart,
+    add_order
 )
 
 
@@ -58,7 +59,7 @@ async def get_books():
 
 
 @app.post('/api/cart')
-async def post_cart(request: Cart):
+async def post_cart(request: Item):
     response = await cart(request, "add")
     if response:
         return response
@@ -66,8 +67,16 @@ async def post_cart(request: Cart):
 
 
 @app.delete('/api/cart')
-async def del_cart(request: Cart):
+async def delete_cart(request: Item):
     response = await cart(request, "delete")
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@app.post('/api/order')
+async def post_order(request: Item):
+    response = await add_order(request)
     if response:
         return response
     raise HTTPException(404, "Something went wrong")

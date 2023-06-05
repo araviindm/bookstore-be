@@ -1,6 +1,6 @@
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
-from model import Customer, Login, Book, Cart
+from model import Customer, Login, Book, Item
 from hashing import Hash
 from fastapi import HTTPException, Depends, status
 from auth_handler import signJWT
@@ -21,14 +21,14 @@ db = client.BookStore
 
 async def create_customer(request: Customer):
     hashed_pass = Hash.bcrypt(request.password)
-    user_object = dict(request)
-    user_object["password"] = hashed_pass
-    user = await db.customers.find_one({"email": user_object["email"]})
-    if not user:
-        user_id = await db.customers.insert_one(user_object)
+    customer_object = dict(request)
+    customer_object["password"] = hashed_pass
+    customer = await db.customers.find_one({"email": customer_object["email"]})
+    if not customer:
+        cust_id = await db.customers.insert_one(customer_object)
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=f'{user_object["email"]} already exists')
+                            detail=f'{customer_object["email"]} already exists')
     return {"res": "created"}
 
 
@@ -51,14 +51,11 @@ async def fetch_books():
     return books
 
 
-async def cart(request: Cart, type: str):
-    user_id = request.cust_id
+async def cart(request: Item, type: str):
+    cust_id = request.cust_id
     book_id = request.book_id
-    user: Customer = await db.customers.find_one({"_id": ObjectId(user_id)})
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'Error adding to cart')
-    cart = user['cart']
+    customer: Customer = await find_customer_by_id(cust_id)
+    cart = customer['cart']
     resp = {}
     if type == "add":
         cart.append(book_id)
@@ -69,9 +66,29 @@ async def cart(request: Cart, type: str):
                                 detail=f'Cart is empty')
         cart.remove(book_id)
         resp = {"res": "deleted"}
-
-    db_resp = await db.customers.update_one({"_id": ObjectId(user_id)}, {"$set": {"cart": cart}})
+    db_resp = await db.customers.update_one({"_id": ObjectId(cust_id)}, {"$set": {"cart": cart}})
     if not db_resp:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Error adding to cart')
     return resp
+
+
+async def add_order(request: Item):
+    cust_id = request.cust_id
+    book_id = request.book_id
+    customer: Customer = await find_customer_by_id(cust_id)
+    orders = customer['orders']
+    orders.append(book_id)
+    db_resp = await db.customers.update_one({"_id": ObjectId(cust_id)}, {"$set": {"orders": orders}})
+    if not db_resp:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error adding to cart')
+    return {"res": "added"}
+
+
+async def find_customer_by_id(cust_id: str):
+    customer: Customer = await db.customers.find_one({"_id": ObjectId(cust_id)})
+    if not customer:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error in fetching customer')
+    return customer

@@ -27,6 +27,6 @@ class Login(BaseModel):
     password: str
 
 
-class Cart(BaseModel):
+class Item(BaseModel):
     cust_id: str
     book_id: str
