@@ -51,6 +51,14 @@ async def fetch_books():
     return books
 
 
+async def find_book_by_id(book_id: str):
+    book: Book = await db.books.find_one({"_id": ObjectId(book_id)})
+    if not book:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error in fetching book')
+    return book
+
+
 async def cart(request: Item, type: str):
     cust_id = request.cust_id
     book_id = request.book_id
