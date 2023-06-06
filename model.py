@@ -16,6 +16,7 @@ class Book(BaseModel):
 
 
 class Customer(BaseModel):
+    name: str
     email: str
     password: str
     orders: Optional[list]

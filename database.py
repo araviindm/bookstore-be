@@ -21,23 +21,29 @@ db = client.BookStore
 
 async def create_customer(request: Customer):
     hashed_pass = Hash.bcrypt(request.password)
-    customer_object = dict(request)
-    customer_object["password"] = hashed_pass
-    customer = await db.customers.find_one({"email": customer_object["email"]})
-    if not customer:
-        cust_id = await db.customers.insert_one(customer_object)
+    customer = dict(request)
+    customer["password"] = hashed_pass
+    resp = await db.customers.find_one({"email": customer["email"]})
+    if not resp:
+        cust_id = await db.customers.insert_one(customer)
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=f'{customer_object["email"]} already exists')
-    return {"res": "created"}
+                            detail=f'{customer["email"]} already exists')
+    response = signJWT(customer["email"])
+    response["email"] = customer["email"]
+    response["name"] = customer["name"]
+    return response
 
 
 async def login(request: Login):
-    user = await db.customers.find_one({"email": request.email})
-    if (not user) or (not Hash.verify(user["password"], request.password)):
+    customer: Customer = await db.customers.find_one({"email": request.email})
+    if (not customer) or (not Hash.verify(customer["password"], request.password)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Wrong email or password')
-    return signJWT(user["email"])
+    response = signJWT(customer["email"])
+    response["email"] = customer["email"]
+    response["name"] = customer["name"]
+    return response
 
 
 async def fetch_books():

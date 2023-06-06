@@ -61,7 +61,7 @@ async def signin(request: Login):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.get('/book')
+@private_routes.get('/book')
 async def get_books():
     response = await fetch_books()
     if response:
@@ -69,7 +69,7 @@ async def get_books():
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.get('/book/{id}')
+@private_routes.get('/book/{id}')
 async def get_book(id: str):
     response: Book = await find_book_by_id(id)
     if response:
@@ -77,7 +77,7 @@ async def get_book(id: str):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.post('/cart')
+@private_routes.post('/cart')
 async def post_cart(request: Item):
     response = await cart(request, "add")
     if response:
@@ -85,7 +85,7 @@ async def post_cart(request: Item):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.delete('/cart')
+@private_routes.delete('/cart')
 async def delete_cart(request: Item):
     response = await cart(request, "delete")
     if response:
@@ -93,7 +93,7 @@ async def delete_cart(request: Item):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.post('/order')
+@private_routes.post('/order')
 async def post_order(request: Item):
     response = await add_order(request)
     if response:
@@ -101,7 +101,7 @@ async def post_order(request: Item):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.get('/search/{id}')
+@private_routes.get('/search/{id}')
 async def search(id: str):
     response = await search_books(id)
     if response:
