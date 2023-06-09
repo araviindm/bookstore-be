@@ -20,12 +20,15 @@ db = client.BookStore
 
 
 async def create_customer(request: Customer):
-    hashed_pass = Hash.bcrypt(request.password)
     customer = dict(request)
-    customer["password"] = hashed_pass
     resp = await db.customers.find_one({"email": customer["email"]})
     if not resp:
+        hashed_pass = Hash.bcrypt(customer["password"])
+        customer["password"] = hashed_pass
         cust_id = await db.customers.insert_one(customer)
+        if not cust_id:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f'Customer not created')
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f'{customer["email"]} already exists')
