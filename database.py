@@ -1,8 +1,8 @@
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
-from model import Customer, Login, Book
+from model import Customer, Login, Book, Cart, Order
 from hashing import Hash
-from fastapi import HTTPException, Depends, status
+from fastapi import HTTPException, Depends, Request, status
 from auth_handler import signJWT
 from decouple import config
 
@@ -38,6 +38,14 @@ async def create_customer(request: Customer):
     return response
 
 
+async def find_customer_by_id(cust_id: str):
+    customer: Customer = await db.customers.find_one({"_id": ObjectId(cust_id)})
+    if not customer:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error in fetching customer')
+    return customer
+
+
 async def login(request: Login):
     customer: Customer = await db.customers.find_one({"email": request.email})
     if (not customer) or (not Hash.verify(customer["password"], request.password)):
@@ -70,6 +78,52 @@ async def find_book_by_id(book_id: str):
     return book
 
 
+async def cart(request: Cart, type: str):
+    cust_id = request.cust_id
+    book_id = request.book_id
+    customer: Customer = await find_customer_by_id(cust_id)
+    cart = customer['cart']
+    resp = {}
+    if type == "add":
+        cart.append(book_id)
+        resp = {"res": "added"}
+    else:
+        if not cart:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f'Cart is empty')
+        cart.remove(book_id)
+        resp = {"res": "deleted"}
+    db_resp = await db.customers.update_one({"_id": ObjectId(cust_id)}, {"$set": {"cart": cart}})
+    if not db_resp:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error adding to cart')
+    return resp
+
+
+async def add_order(request: Order):
+
+    cust_id = request.cust_id
+    book_id = request.book_id
+    order_date = request.order_date
+
+    customer: Customer = await find_customer_by_id(cust_id)
+    orders = customer['orders']
+    orders.append({"book_id": book_id, "order_date": order_date})
+    db_resp = await db.customers.update_one({"_id": ObjectId(cust_id)}, {"$set": {"orders": orders}})
+    if not db_resp:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error adding to cart')
+    return {"res": "added"}
+
+
+async def find_customer_by_id(cust_id: str):
+    customer: Customer = await db.customers.find_one({"_id": ObjectId(cust_id)})
+    if not customer:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Error in fetching customer')
+    return customer
+
+
 async def search_books(query: str):
     cursor = db.books.find({
         "$or": [
@@ -86,45 +140,3 @@ async def search_books(query: str):
         document["_id"] = str(document["_id"])
         books.append(document)
     return books
-
-# async def cart(request: Item, type: str):
-#     cust_id = request.cust_id
-#     book_id = request.book_id
-#     customer: Customer = await find_customer_by_id(cust_id)
-#     cart = customer['cart']
-#     resp = {}
-#     if type == "add":
-#         cart.append(book_id)
-#         resp = {"res": "added"}
-#     else:
-#         if not cart:
-#             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-#                                 detail=f'Cart is empty')
-#         cart.remove(book_id)
-#         resp = {"res": "deleted"}
-#     db_resp = await db.customers.update_one({"_id": ObjectId(cust_id)}, {"$set": {"cart": cart}})
-#     if not db_resp:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-#                             detail=f'Error adding to cart')
-#     return resp
-
-
-# async def add_order(request: Item):
-#     cust_id = request.cust_id
-#     book_id = request.book_id
-#     customer: Customer = await find_customer_by_id(cust_id)
-#     orders = customer['orders']
-#     orders.append(book_id)
-#     db_resp = await db.customers.update_one({"_id": ObjectId(cust_id)}, {"$set": {"orders": orders}})
-#     if not db_resp:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-#                             detail=f'Error adding to cart')
-#     return {"res": "added"}
-
-
-# async def find_customer_by_id(cust_id: str):
-#     customer: Customer = await db.customers.find_one({"_id": ObjectId(cust_id)})
-#     if not customer:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-#                             detail=f'Error in fetching customer')
-#     return customer

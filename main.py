@@ -1,14 +1,16 @@
 
-from fastapi import APIRouter, FastAPI, HTTPException, Depends
+from fastapi import APIRouter, FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from auth_bearer import JWTBearer
-from model import Customer, Login, Book
+from model import Cart, Customer, Login, Book, Order
 from database import (
     create_customer,
     login,
     fetch_books,
     find_book_by_id,
-    search_books
+    cart,
+    add_order,
+    search_books,
 )
 
 
@@ -75,36 +77,36 @@ async def get_book(id: str):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.get('/search/{id}')
-async def search(id: str):
-    response = await search_books(id)
+@public_routes.post('/cart')
+async def post_cart(request: Cart):
+    response = await cart(request, "add")
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@public_routes.delete('/cart')
+async def delete_cart(request: Cart):
+    response = await cart(request, "delete")
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@public_routes.post('/order')
+async def post_order(request: Order):
+    response = await add_order(request)
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@public_routes.get('/search/{search_text}')
+async def search(search_text: str):
+    response = await search_books(search_text)
     if response:
         return response
     raise HTTPException(404, "Something went wrong")
 
 app.include_router(public_routes)
 app.include_router(private_routes)
-
-
-# @private_routes.post('/cart')
-# async def post_cart(request: Item):
-#     response = await cart(request, "add")
-#     if response:
-#         return response
-#     raise HTTPException(404, "Something went wrong")
-
-
-# @private_routes.delete('/cart')
-# async def delete_cart(request: Item):
-#     response = await cart(request, "delete")
-#     if response:
-#         return response
-#     raise HTTPException(404, "Something went wrong")
-
-
-# @private_routes.post('/order')
-# async def post_order(request: Item):
-#     response = await add_order(request)
-#     if response:
-#         return response
-#     raise HTTPException(404, "Something went wrong")

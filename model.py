@@ -25,36 +25,6 @@ class Book(BaseModel):
         return publication_date_value
 
 
-class Item(BaseModel):
-    _id: ObjectId
-    book_id: str
-    cust_id: str
-    order_date: int
-
-    @validator('book_id', 'cust_id')
-    def validate_fields(cls, id_values):
-
-        book_id, cust_id, order_date = id_values
-        if not ObjectId.is_valid(book_id):
-            raise ValueError('Invalid book id')
-
-        if not ObjectId.is_valid(cust_id):
-            raise ValueError('Invalid customerid')
-
-        if order_date < 0:
-            raise ValueError('Invalid epoch timestamp')
-
-        return id_values
-
-
-class Order():
-    Item
-
-
-class Cart():
-    Item
-
-
 class Customer(BaseModel):
     _id: ObjectId
     name: str
@@ -127,3 +97,45 @@ class Login(BaseModel):
 
     class Config:
         validate_assignment = True
+
+
+class Cart(BaseModel):
+    cust_id: str
+    book_id: str
+
+    @validator('cust_id')
+    def validate_cust_id(cls, cust_id_value):
+        if not ObjectId.is_valid(cust_id_value):
+            raise ValueError('Invalid cust id')
+        return cust_id_value
+
+    @validator('book_id')
+    def validate_book_id(cls, book_id_value):
+        if not ObjectId.is_valid(book_id_value):
+            raise ValueError('Invalid book id')
+        return book_id_value
+
+
+class Order(BaseModel):
+    cust_id: str
+    order_date: int
+    book_id: str
+
+    @validator('cust_id')
+    def validate_cust_id(cls, cust_id_value):
+        if not ObjectId.is_valid(cust_id_value):
+            raise ValueError('Invalid cust id')
+        return cust_id_value
+
+    @validator('book_id')
+    def validate_book_id(cls, book_id_value):
+        if not ObjectId.is_valid(book_id_value):
+            raise ValueError('Invalid book id')
+        return book_id_value
+
+    @validator('order_date')
+    def validate_order_date(cls, order_date_value):
+        if order_date_value < 0:
+            raise ValueError('Invalid epoch timestamp')
+
+        return order_date_value
