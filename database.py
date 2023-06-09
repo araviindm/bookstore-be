@@ -108,7 +108,7 @@ async def add_order(request: Order):
 
     customer: Customer = await find_customer_by_id(cust_id)
     orders = customer['orders']
-    orders.append({"book_id": book_id, "order_date": order_date})
+    orders.append({"order_id": book_id, "order_date": order_date})
     db_resp = await db.customers.update_one({"_id": ObjectId(cust_id)}, {"$set": {"orders": orders}})
     if not db_resp:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -124,14 +124,51 @@ async def find_customer_by_id(cust_id: str):
     return customer
 
 
-async def search_books(query: str):
-    cursor = db.books.find({
-        "$or": [
-            {"title": {"$regex": query, '$options': 'i'}},
-            {"author": {"$regex": query, '$options': 'i'}},
-            {"genre": {"$regex": query, '$options': 'i'}}
-        ]
-    })
+async def search_books(search_query: str, genre: str, minPrice: int, maxPrice: int, minDate: int, maxDate: int):
+
+    root_clause = {}
+    db_query = []
+    if search_query:
+
+        db_query.append({
+            "$or": [
+                {"title": {"$regex": search_query, '$options': 'i'}},
+                {"author": {"$regex": search_query, '$options': 'i'}},
+                {"genre": {"$regex": search_query, '$options': 'i'}}
+            ]
+        })
+
+    if genre:
+        db_query.append({
+            "genre": {"$regex": genre}
+        })
+
+    if minPrice:
+        db_query.append({
+            "price": {"$gte": minPrice}
+        })
+
+    if maxPrice:
+        db_query.append({
+            "price": {"$lte": maxPrice}
+        })
+
+    if minDate:
+        db_query.append({
+            "publication_date": {"$gte": minDate}
+        })
+
+    if maxDate:
+        db_query.append({
+            "publication_date": {"$lte": maxDate}
+        })
+
+    if db_query:
+        root_clause = {"$and": db_query}
+
+    print(root_clause)
+
+    cursor = db.books.find(root_clause)
     if not cursor:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Error fetching books')

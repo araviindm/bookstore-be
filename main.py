@@ -101,9 +101,14 @@ async def post_order(request: Order):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.get('/search/{search_text}')
-async def search(search_text: str):
-    response = await search_books(search_text)
+@public_routes.get('/search')
+async def search(search_query: str | None = None,
+                 genre: str | None = None,
+                 minPrice: int | None = None,
+                 maxPrice: int | None = None,
+                 minDate: int | None = None,
+                 maxDate: int | None = None):
+    response = await search_books(search_query, genre, minPrice, maxPrice, minDate, maxDate)
     if response:
         return response
     raise HTTPException(404, "Something went wrong")
