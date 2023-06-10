@@ -30,7 +30,7 @@ class Customer(BaseModel):
     name: str
     email: EmailStr
     password: str
-    orders: Optional[list[str]]
+    orders: Optional[list[dict]]
     cart: Optional[list[str]]
 
     @validator('name')

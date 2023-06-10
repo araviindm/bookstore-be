@@ -21,7 +21,7 @@ db = client.BookStore
 
 async def create_customer(request: Customer):
     customer = dict(request)
-    resp = await db.customers.find_one({"email": customer["email"]})
+    resp: Customer = await db.customers.find_one({"email": customer["email"]})
     if not resp:
         hashed_pass = Hash.bcrypt(customer["password"])
         customer["password"] = hashed_pass
@@ -33,6 +33,7 @@ async def create_customer(request: Customer):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f'{customer["email"]} already exists')
     response = signJWT(customer["email"])
+    response["_id"] = str(customer["_id"])
     response["email"] = customer["email"]
     response["name"] = customer["name"]
     return response
@@ -52,6 +53,7 @@ async def login(request: Login):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Wrong email or password')
     response = signJWT(customer["email"])
+    response["_id"] = str(customer["_id"])
     response["email"] = customer["email"]
     response["name"] = customer["name"]
     return response
