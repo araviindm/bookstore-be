@@ -36,6 +36,8 @@ async def create_customer(request: Customer):
     response["_id"] = str(customer["_id"])
     response["email"] = customer["email"]
     response["name"] = customer["name"]
+    response["orders"] = customer["orders"]
+    response["cart"] = customer["cart"]
     return response
 
 
@@ -56,6 +58,8 @@ async def login(request: Login):
     response["_id"] = str(customer["_id"])
     response["email"] = customer["email"]
     response["name"] = customer["name"]
+    response["orders"] = customer["orders"]
+    response["cart"] = customer["cart"]
     return response
 
 
