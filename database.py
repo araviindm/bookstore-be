@@ -78,6 +78,22 @@ async def find_book_by_id(book_id: str):
     return book
 
 
+async def fetch_cart_for_cust(cust_id: str):
+    customer: Customer = await find_customer_by_id(cust_id)
+    cart = customer['cart']
+    cartItems = []
+    for book_id in cart:
+        cust_book = await find_book_by_id(book_id)
+        cartItems.append({
+            "_id": cust_book["_id"],
+            "title": cust_book["title"],
+            "author": cust_book["author"],
+            "cover_image_url": cust_book["cover_image_url"],
+        })
+
+    return cartItems
+
+
 async def cart(request: Cart, type: str):
     cust_id = request.cust_id
     book_id = request.book_id
@@ -98,6 +114,24 @@ async def cart(request: Cart, type: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f'Error adding to cart')
     return resp
+
+
+async def fetch_order_for_cust(cust_id: str):
+    customer: Customer = await find_customer_by_id(cust_id)
+    orders = customer['orders']
+    orderItems = []
+    for order in orders:
+        book_id = order["order_id"]
+        order_date = order["order_date"]
+        cust_book = await find_book_by_id(book_id)
+        orderItems.append({
+            "_id": cust_book["_id"],
+            "title": cust_book["title"],
+            "author": cust_book["author"],
+            "cover_image_url": cust_book["cover_image_url"],
+            "created": order_date
+        })
+    return orderItems
 
 
 async def add_order(request: Order):

@@ -11,6 +11,8 @@ from database import (
     cart,
     add_order,
     search_books,
+    fetch_cart_for_cust,
+    fetch_order_for_cust
 )
 
 
@@ -77,6 +79,14 @@ async def get_book(id: str):
     raise HTTPException(404, "Something went wrong")
 
 
+@public_routes.get('/cart/{cust_id}')
+async def get_cart_for_cust(cust_id: str):
+    response = await fetch_cart_for_cust(cust_id)
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
 @public_routes.post('/cart')
 async def post_cart(request: Cart):
     response = await cart(request, "add")
@@ -88,6 +98,14 @@ async def post_cart(request: Cart):
 @public_routes.delete('/cart')
 async def delete_cart(request: Cart):
     response = await cart(request, "delete")
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
+@public_routes.get('/order/{cust_id}')
+async def get_order_for_cust(cust_id: str):
+    response = await fetch_order_for_cust(cust_id)
     if response:
         return response
     raise HTTPException(404, "Something went wrong")
