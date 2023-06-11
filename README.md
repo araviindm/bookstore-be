@@ -5,9 +5,9 @@
 
 ## The .env file
 
-JWT_SECRET=
-JWT_ALGORITHM=
-MONGODB_URI =
+JWT_SECRET= 
+JWT_ALGORITHM= 
+MONGODB_URI = 
 
 ## To install dependencies
 
