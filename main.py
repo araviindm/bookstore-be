@@ -6,6 +6,7 @@ from model import Cart, Customer, Login, Book, Order
 from database import (
     create_customer,
     login,
+    add_books,
     fetch_books,
     find_book_by_id,
     cart,
@@ -18,7 +19,7 @@ from database import (
 
 app = FastAPI()
 
-origins = ['http:localhost:3000']
+origins = ['http://localhost:3000']
 
 app.add_middleware(
     CORSMiddleware,
@@ -63,6 +64,14 @@ async def signin(request: Login):
     raise HTTPException(404, "Something went wrong")
 
 
+@private_routes.post('/book')
+async def post_books():
+    response = await add_books()
+    if response:
+        return response
+    raise HTTPException(404, "Something went wrong")
+
+
 @public_routes.get('/book')
 async def get_books():
     response = await fetch_books()
@@ -79,7 +88,7 @@ async def get_book(id: str):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.get('/cart/{cust_id}')
+@private_routes.get('/cart/{cust_id}')
 async def get_cart_for_cust(cust_id: str):
     response = await fetch_cart_for_cust(cust_id)
     if response:
@@ -87,7 +96,7 @@ async def get_cart_for_cust(cust_id: str):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.post('/cart')
+@private_routes.post('/cart')
 async def post_cart(request: Cart):
     response = await cart(request, "add")
     if response:
@@ -95,7 +104,7 @@ async def post_cart(request: Cart):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.delete('/cart')
+@private_routes.delete('/cart')
 async def delete_cart(request: Cart):
     response = await cart(request, "delete")
     if response:
@@ -103,7 +112,7 @@ async def delete_cart(request: Cart):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.get('/order/{cust_id}')
+@private_routes.get('/order/{cust_id}')
 async def get_order_for_cust(cust_id: str):
     response = await fetch_order_for_cust(cust_id)
     if response:
@@ -111,7 +120,7 @@ async def get_order_for_cust(cust_id: str):
     raise HTTPException(404, "Something went wrong")
 
 
-@public_routes.post('/order')
+@private_routes.post('/order')
 async def post_order(request: Order):
     response = await add_order(request)
     if response:

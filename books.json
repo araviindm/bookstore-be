@@ -1,0 +1,102 @@
+[
+  {
+    "title": "It Ends with Us",
+    "author": "Colleen Hoover",
+    "description": "It Ends with Us is a romance novel by Colleen Hoover, published by Atria Books on August 2, 2016. Based on the relationship between her mother and father, Hoover described it as the 'hardest book I\\'ve ever written'",
+    "cover_image_url": "",
+    "price": 274,
+    "genre": "romance",
+    "publication_date": 1470076200000,
+    "customer_ratings": "4"
+  },
+  {
+    "title": "Atomic Habits",
+    "author": "James Clear",
+    "description": "THE PHENOMENAL INTERNATIONAL BESTSELLER - 1 MILLION COPIES SOLDTransform your life with tiny changes in behaviour - starting now. People think that when you want to change your life, you need to think big.",
+    "cover_image_url": "",
+    "price": 551,
+    "genre": "self help",
+    "publication_date": 1539801000000,
+    "customer_ratings": "4.5"
+  },
+  {
+    "title": "Ikigai",
+    "author": "Francesc Miralles",
+    "description": "INTERNATIONAL BESTSELLER • 1.5 MILLION+ COPIES SOLD WORLDWIDE“Workers looking for more fulfilling positions should start by identifying their ikigai.”",
+    "cover_image_url": "",
+    "price": 391,
+    "genre": "self help",
+    "publication_date": 1504722600000,
+    "customer_ratings": "4"
+  },
+  {
+    "title": "Sapiens",
+    "author": "Yuval Noah Harari",
+    "description": "100,000 years ago, at least six human species inhabited the earth. Today there is just one. Us. Homo sapiens.",
+    "cover_image_url": "",
+    "price": 455,
+    "genre": "history",
+    "publication_date": 1430332200000,
+    "customer_ratings": "4.5"
+  },
+  {
+    "title": "Wings of Fire",
+    "author": "Apj Abdul Kalam",
+    "description": "Wings of Fire: An Autobiography is an autobiographical novel that tells the readers a story about unlocking their inner potential. Kalam does a great deal to throw light on his journey to igniting the fire within himself.",
+    "cover_image_url": "",
+    "price": 356,
+    "genre": "biography",
+    "publication_date": 915993000000,
+    "customer_ratings": "4"
+  },
+  {
+    "title": "All the Light We Cannot See",
+    "author": "Anthony Doerr",
+    "description": "The novel is set during World War II and centers around the characters Marie-Laure Leblanc, a blind French girl who takes refuge in her uncle's house in Saint-Malo after Paris is invaded by Nazi Germany, and Werner Pfennig, a bright German boy who is accepted into a military school because of his skills in radio technology, before being sent to the military.",
+    "cover_image_url": "",
+    "price": 358,
+    "genre": "fiction",
+    "publication_date": 1447871400000,
+    "customer_ratings": "4"
+  },
+  {
+    "title": "Rich Dad Poor Dad",
+    "author": "Robert T Kiyosaki",
+    "description": "It's been nearly 25 years since Robert Kiyosaki's Rich Dad Poor Dad first made waves in the Personal Finance arena. It has since become the #1 Personal Finance book of all time... translated into dozens of languages and sold around the world.",
+    "cover_image_url": "",
+    "price": 516,
+    "genre": "finance",
+    "publication_date": 954527400000,
+    "customer_ratings": "4"
+  },
+  {
+    "title": "All-In on AI",
+    "author": "Tom Davenport",
+    "description": "Written by bestselling authot Tom Davenport and Deloitte's Nitin Mittal, All-In on AI looks at artificial intelligence at its cutting edge from the viewpoint of established companies like Anthem, Ping An, Airbus, and Capital One.",
+    "cover_image_url": "",
+    "price": 1880,
+    "genre": "internet",
+    "publication_date": 1680114600000,
+    "customer_ratings": "4"
+  },
+  {
+    "title": "The Psychology of Money",
+    "author": "Morgan Housel",
+    "description": "Timeless lessons on wealth, greed, and happiness doing well with money isn?t necessarily about what you know. It?s about how you behave. And behavior is hard to teach, even to really smart people. ",
+    "cover_image_url": "",
+    "price": 295,
+    "genre": "business",
+    "publication_date": 1598898600000,
+    "customer_ratings": "4.5"
+  },
+  {
+    "title": "The Silent Patient",
+    "author": "Alex Michaelides",
+    "description": "The Silent Patient is a shocking psychological thriller of a woman’s act of violence against her husband—and of the therapist obsessed with uncovering her motive.",
+    "cover_image_url": "",
+    "price": 679,
+    "genre": "crime",
+    "publication_date": 1576089000000,
+    "customer_ratings": "4"
+  }
+]

@@ -1,3 +1,4 @@
+import json
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from model import Customer, Login, Book, Cart, Order
@@ -61,6 +62,12 @@ async def login(request: Login):
     response["orders"] = customer["orders"]
     response["cart"] = customer["cart"]
     return response
+
+
+async def add_books():
+    data = await read_json_file('books.json')
+    await db.books.insert_many(data)
+    return {"res": "inserted"}
 
 
 async def fetch_books():
@@ -202,11 +209,8 @@ async def search_books(search_query: str, genre: str, minPrice: int, maxPrice: i
         db_query.append({
             "publication_date": {"$lte": maxDate}
         })
-
     if db_query:
         root_clause = {"$and": db_query}
-
-    print(root_clause)
 
     cursor = db.books.find(root_clause)
     if not cursor:
@@ -217,3 +221,9 @@ async def search_books(search_query: str, genre: str, minPrice: int, maxPrice: i
         document["_id"] = str(document["_id"])
         books.append(document)
     return books
+
+
+async def read_json_file(file_path):
+    with open(file_path, 'r', encoding="utf-8") as file:
+        data = json.load(file)
+    return data
