@@ -19,7 +19,7 @@ def token_response(token: str):
 def signJWT(email: str) -> Dict[str, str]:
     payload = {
         "user_id": email,
-        "expires": time.time() + 600
+        "expires": time.time() + 3600
     }
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
